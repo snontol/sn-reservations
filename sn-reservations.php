@@ -68,8 +68,64 @@ function snr_render_tables_page()
 
     echo '</tbody>';
     echo '</table>';
+
+        ?>
+    <h2>Añadir mesa</h2>
+
+    <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+        <input type="hidden" name="action" value="snr_add_table">
+        <?php wp_nonce_field( 'snr_add_table' ); ?>
+
+         <p>
+            <label for="snr_table_name">Nombre</label>
+            <input type="text" id="snr_table_name" name="table_name" maxlength="50" required>
+        </p>
+            <label for="snr_table_capacity">Capacidad</label>
+            <input type="number" id="snr_table_capacity" name="table_capacity" min="1" max="20" required>
+        </p>
+
+        <?php submit_button( 'Añadir mesa' ); ?>
+    </form>
+    <?php
+
     echo '</div>';
 }
+
+function snr_handle_add_table() {
+    // 1. Permisos: solo administradores
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_die( 'No tienes permisos para hacer esto.' );
+    }
+
+    // 2. Nonce: el formulario viene de tu panel
+    check_admin_referer( 'snr_add_table' );
+
+    // 3. Recoger y sanear los datos
+    $name     = sanitize_text_field( wp_unslash( $_POST['table_name'] ?? '' ) );
+    $capacity = absint( $_POST['table_capacity'] ?? 0 );
+
+    // 4. Validar 
+    if (( $name === '' ) || ( $capacity < 1) || ( $capacity > 20) ) {   
+        wp_die( 'Datos no válidos' );
+    }      
+
+    // 5. Guardar en la base de datos
+    global $wpdb;
+    $wpdb->insert(
+        $wpdb->prefix . 'snr_tables',
+        array(
+            'name'     => $name,
+            'capacity' => $capacity,
+        ),
+        array( '%s', '%d' )
+    );
+
+    // 6. Volver a la página de mesas
+    wp_safe_redirect( admin_url( 'admin.php?page=snr-tables' ) );
+    exit;
+}
+
+add_action( 'admin_post_snr_add_table', 'snr_handle_add_table' );
 
 function snr_activate()
 {
