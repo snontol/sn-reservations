@@ -60,3 +60,41 @@ function snr_render_reservation_form()
 }
 
 add_shortcode('sn_reservation_form', 'snr_render_reservation_form');
+
+function snr_handle_reservation_submit()
+{
+    // 1. Nonce
+    check_admin_referer('snr_submit_reservation');
+
+    // 2. Recoger y sanear
+    $name        = sanitize_text_field(wp_unslash($_POST['customer_name'] ?? ''));
+    $phone       = sanitize_text_field(wp_unslash($_POST['customer_phone'] ?? ''));
+    $email       = sanitize_email(wp_unslash($_POST['customer_email'] ?? ''));
+    $party_size  = absint($_POST['party_size'] ?? 0);
+    $high_chairs = absint($_POST['high_chairs'] ?? 0);
+    $date        = sanitize_text_field(wp_unslash($_POST['reservation_date'] ?? ''));
+    $time        = sanitize_text_field(wp_unslash($_POST['start_time'] ?? ''));
+    $notes       = sanitize_textarea_field(wp_unslash($_POST['notes'] ?? ''));
+
+    // 3. Datos de referencia para validar
+    $allowed_times = array('13:00', '13:30', '14:00', '14:30', '20:30', '21:00', '21:30', '22:00');
+    $today         = current_time('Y-m-d');
+
+    // 4. Validar 
+    if ($name === '' 
+    || $phone === '' 
+    || ! is_email($email) 
+    || $party_size < 1 
+    || $party_size > 6 
+    || $high_chairs > 5 
+    || $date < $today 
+    || !in_array($time, $allowed_times, true)) {
+        wp_die('Datos no válidos');
+    }
+
+    // 5. Prueba temporal: mostrar los datos recibidos
+    wp_die('Datos correctos: ' . esc_html($name) . ', ' . esc_html($date) . ' a las ' . esc_html($time));
+}
+
+add_action('admin_post_snr_submit_reservation', 'snr_handle_reservation_submit');
+add_action('admin_post_nopriv_snr_submit_reservation', 'snr_handle_reservation_submit');
