@@ -28,3 +28,24 @@ function snr_render_admin_page() {
 }
 
 add_action( 'admin_menu', 'snr_register_admin_menu' );
+
+function snr_activate() {
+    global $wpdb;
+
+    $charset_collate = $wpdb->get_charset_collate();
+    $tables_table    = $wpdb->prefix . 'snr_tables';
+
+    $sql_tables = "CREATE TABLE $tables_table (
+        id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+        name varchar(50) NOT NULL,
+        capacity tinyint(3) unsigned NOT NULL,
+        is_active tinyint(1) NOT NULL DEFAULT 1,
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    dbDelta( $sql_tables );
+}
+
+register_activation_hook( __FILE__, 'snr_activate' );
+
