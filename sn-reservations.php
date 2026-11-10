@@ -19,6 +19,7 @@ require_once SNR_PLUGIN_DIR . 'includes/activation.php';
 require_once SNR_PLUGIN_DIR . 'includes/admin-menu.php';
 require_once SNR_PLUGIN_DIR . 'includes/admin-tables.php';
 require_once SNR_PLUGIN_DIR . 'includes/availability.php';
+require_once SNR_PLUGIN_DIR . 'includes/emails.php';
 require_once SNR_PLUGIN_DIR . 'includes/public-form.php';
 
 register_activation_hook(__FILE__, 'snr_activate');

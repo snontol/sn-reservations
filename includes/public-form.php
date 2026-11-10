@@ -5,7 +5,28 @@ defined('ABSPATH') || exit;
 function snr_render_reservation_form()
 {
     ob_start();
-?>
+    $status = sanitize_key($_GET['snr_status'] ?? '');
+
+    if ('success' === $status) {
+        ?>
+        <div class="snr-confirmation" role="status">
+            <h2>¡Reserva confirmada!</h2>
+            <p>Te hemos enviado un email con los detalles de tu reserva.</p>
+            <p>¡Te esperamos!</p>
+            <p><a href="<?php echo esc_url(remove_query_arg('snr_status')); ?>">Hacer otra reserva</a></p>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+    ?>
+    <?php if ('full' === $status): ?>
+        <p class="snr-message snr-message--error">Lo sentimos, no hay mesas disponibles para esa fecha y hora. Prueba con otro
+            horario.</p>
+    <?php endif; ?>
+    <?php if ('error' === $status): ?>
+        <p class="snr-message snr-message--error">Ha habido un problema al guardar tu reserva. Inténtalo de nuevo o llámanos.
+        </p>
+    <?php endif; ?>
     <form class="snr-form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
         <input type="hidden" name="action" value="snr_submit_reservation">
         <?php wp_nonce_field('snr_submit_reservation'); ?>
@@ -55,7 +76,7 @@ function snr_render_reservation_form()
 
         <p><button type="submit">Reservar</button></p>
     </form>
-<?php
+    <?php
     return ob_get_clean();
 }
 
@@ -67,43 +88,88 @@ function snr_handle_reservation_submit()
     check_admin_referer('snr_submit_reservation');
 
     // 2. Recoger y sanear
-    $name        = sanitize_text_field(wp_unslash($_POST['customer_name'] ?? ''));
-    $phone       = sanitize_text_field(wp_unslash($_POST['customer_phone'] ?? ''));
-    $email       = sanitize_email(wp_unslash($_POST['customer_email'] ?? ''));
-    $party_size  = absint($_POST['party_size'] ?? 0);
+    $name = sanitize_text_field(wp_unslash($_POST['customer_name'] ?? ''));
+    $phone = sanitize_text_field(wp_unslash($_POST['customer_phone'] ?? ''));
+    $email = sanitize_email(wp_unslash($_POST['customer_email'] ?? ''));
+    $party_size = absint($_POST['party_size'] ?? 0);
     $high_chairs = absint($_POST['high_chairs'] ?? 0);
-    $date        = sanitize_text_field(wp_unslash($_POST['reservation_date'] ?? ''));
-    $time        = sanitize_text_field(wp_unslash($_POST['start_time'] ?? ''));
-    $notes       = sanitize_textarea_field(wp_unslash($_POST['notes'] ?? ''));
+    $date = sanitize_text_field(wp_unslash($_POST['reservation_date'] ?? ''));
+    $time = sanitize_text_field(wp_unslash($_POST['start_time'] ?? ''));
+    $notes = sanitize_textarea_field(wp_unslash($_POST['notes'] ?? ''));
 
     // 3. Datos de referencia para validar
     $allowed_times = array('13:00', '13:30', '14:00', '14:30', '20:30', '21:00', '21:30', '22:00');
-    $today         = current_time('Y-m-d');
+    $today = current_time('Y-m-d');
 
     // 4. Validar 
-    if ($name === '' 
-    || $phone === '' 
-    || ! is_email($email) 
-    || $party_size < 1 
-    || $party_size > 6 
-    || $high_chairs > 5 
-    || $date < $today 
-    || !in_array($time, $allowed_times, true)) {
+    if (
+        $name === ''
+        || $phone === ''
+        || !is_email($email)
+        || $party_size < 1
+        || $party_size > 6
+        || $high_chairs > 5
+        || $date < $today
+        || !in_array($time, $allowed_times, true)
+    ) {
         wp_die('Datos no válidos');
     }
 
-    // 5. Prueba temporal: mostrar los datos recibidos
-    //wp_die('Datos correctos: ' . esc_html($name) . ', ' . esc_html($date) . ' a las ' . esc_html($time));
-    //wp_die( 'Datos correctos: ' . esc_html( $time ) . ' → termina a las ' . esc_html( snr_calculate_end_time( $time ) ) );
-    $end_time = snr_calculate_end_time( $time );
-    $table    = snr_find_available_table( $date, $time, $end_time, $party_size );
 
-    // Muestra "Mesa asignada: (nombre)" si hay mesa, o "No hay mesas disponibles" si $table es null
-    if ($table) {
-        wp_die('Mesa asignada: ' . esc_html($table->name));
-    } else {
-        wp_die('No hay mesas disponibles');
+    $end_time = snr_calculate_end_time($time);
+    $table = snr_find_available_table($date, $time, $end_time, $party_size);
+
+    // 6. Página a la que volver: la del formulario
+    $redirect = wp_get_referer() ? wp_get_referer() : home_url('/');
+
+    // 7. Sin mesa libre: volver con aviso
+    if (!$table) {
+        wp_safe_redirect(add_query_arg('snr_status', 'full', $redirect));
+        exit;
     }
+
+    // 8. Guardar la reserva 
+    global $wpdb;
+    $inserted = $wpdb->insert(
+        $wpdb->prefix . 'snr_reservations',
+        array(
+            'table_id' => $table->id,
+            'customer_name' => $name,
+            'customer_phone' => $phone,
+            'customer_email' => $email,
+            'party_size' => $party_size,
+            'high_chairs' => $high_chairs,
+            'reservation_date' => $date,
+            'start_time' => $time,
+            'end_time' => $end_time,
+            'notes' => $notes,
+        ),
+        array(
+            '%d',
+            '%s',
+            '%s',
+            '%s',
+            '%d',
+            '%d',
+            '%s',
+            '%s',
+            '%s',
+            '%s'
+        )
+    );
+
+    // 8a. Si no se pudo guardar, avisar al cliente
+    if (false === $inserted) {
+        wp_safe_redirect(add_query_arg('snr_status', 'error', $redirect));
+        exit;
+    }
+
+    // 8b. Email de confirmación
+    snr_send_confirmation_email($email, $name, $date, $time, $party_size, $table->name);
+
+    // 9. Volver con confirmación
+    wp_safe_redirect(add_query_arg('snr_status', 'success', $redirect));
+    exit;
 }
 
 add_action('admin_post_snr_submit_reservation', 'snr_handle_reservation_submit');
