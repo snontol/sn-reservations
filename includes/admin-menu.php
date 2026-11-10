@@ -23,9 +23,4 @@ function snr_register_admin_menu()
     );
 }
 
-function snr_render_admin_page()
-{
-    echo '<div class="wrap"><h1>Reservas</h1></div>';
-}
-
 add_action('admin_menu', 'snr_register_admin_menu');
