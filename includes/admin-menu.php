@@ -21,6 +21,15 @@ function snr_register_admin_menu()
         'snr-tables',
         'snr_render_tables_page'
     );
+
+    add_submenu_page(
+        'sn-reservations',
+        'Bloqueos',
+        'Bloqueos',
+        'manage_options',
+        'snr-blocks',
+        'snr_render_blocks_page'
+    );
 }
 
 add_action('admin_menu', 'snr_register_admin_menu');

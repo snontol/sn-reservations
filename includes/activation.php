@@ -36,8 +36,19 @@ function snr_activate()
         KEY reservation_date (reservation_date)
     ) $charset_collate;";
 
+    $blocks_table = $wpdb->prefix . 'snr_blocks';
+    $sql_blocks = "CREATE TABLE $blocks_table (
+        id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+        block_date date NOT NULL,
+        service varchar(10) NOT NULL DEFAULT 'all',
+        reason varchar(100),
+        PRIMARY KEY  (id),
+        KEY block_date (block_date)
+    ) $charset_collate;";
+
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
     dbDelta($sql_tables);
     dbDelta($sql_reservations);
+    dbDelta($sql_blocks);
 }
 

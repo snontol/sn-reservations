@@ -2,6 +2,14 @@
 
 defined( 'ABSPATH' ) || exit;
 
+function snr_get_service( $time ) {
+    list( $hours, $minutes ) = explode( ':', $time );
+    $minutes_total = (int) $hours * 60 + (int) $minutes;
+
+    // Devuelve 'lunch' si es antes de las 17:00, y 'dinner' si no (esto lo escribes tú)
+    return $minutes_total < 17 * 60 ? 'lunch' : 'dinner';
+}
+
 function snr_calculate_end_time( $start_time ) {
     // 1. Separar horas y minutos
     list( $hours, $minutes ) = explode( ':', $start_time );
@@ -10,7 +18,7 @@ function snr_calculate_end_time( $start_time ) {
     $start_minutes = (int) $hours * 60 + (int) $minutes;
 
     // 3. Duración: 90 en comida, 120 en cena 
-    $duration = $start_minutes < 17 * 60 ? 90 : 120;
+    $duration = 'lunch' === snr_get_service( $start_time ) ? 90 : 120;
 
     // 4. Minutos de fin
     $end_minutes = $start_minutes + $duration;
