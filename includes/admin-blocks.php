@@ -76,3 +76,47 @@ function snr_render_blocks_page()
     </div>
     <?php
 }
+
+function snr_handle_add_block()
+{
+    // 1. Permisos: solo administradores
+    if (!current_user_can('manage_options')) {
+        wp_die('No tienes permisos para hacer esto.');
+    }
+
+    // 2. Nonce: 'snr_add_block'
+    check_admin_referer('snr_add_block');
+
+    // 3. Recoger y sanear
+    $date = sanitize_text_field(wp_unslash($_POST['block_date'] ?? ''));
+    $service = sanitize_key($_POST['service'] ?? '');
+    $reason = sanitize_text_field(wp_unslash($_POST['reason'] ?? ''));
+
+    // 4. Validar: wp_die( 'Datos no válidos.' ) si se cumple CUALQUIERA de estas:
+    if (
+        !preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)
+        || $date < current_time('Y-m-d')
+        || !in_array($service, array('all', 'lunch', 'dinner'), true)
+    ) {
+        wp_die('Datos no válidos');
+    }
+
+    // 5. Guardar con $wpdb->insert (recuerda global $wpdb)
+    global $wpdb;
+    $wpdb->insert(
+        $wpdb->prefix . 'snr_blocks',
+        array(
+            'block_date' => $date,
+            'service' => $service,
+            'reason' => $reason,
+        ),
+        array('%s', '%s', '%s')
+    );
+
+    // 6. Volver a la página de bloqueos
+    wp_safe_redirect(admin_url('admin.php?page=snr-blocks'));
+    exit;
+}
+
+// 7. Conectar con el hook: add_action( 'admin_post_snr_add_block', ... );
+add_action('admin_post_snr_add_block', 'snr_handle_add_block');
