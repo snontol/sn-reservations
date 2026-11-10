@@ -93,7 +93,8 @@ function snr_handle_reservation_submit()
     }
 
     // 5. Prueba temporal: mostrar los datos recibidos
-    wp_die('Datos correctos: ' . esc_html($name) . ', ' . esc_html($date) . ' a las ' . esc_html($time));
+    //wp_die('Datos correctos: ' . esc_html($name) . ', ' . esc_html($date) . ' a las ' . esc_html($time));
+       wp_die( 'Datos correctos: ' . esc_html( $time ) . ' → termina a las ' . esc_html( snr_calculate_end_time( $time ) ) );
 }
 
 add_action('admin_post_snr_submit_reservation', 'snr_handle_reservation_submit');
