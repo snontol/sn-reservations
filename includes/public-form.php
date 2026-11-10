@@ -94,7 +94,16 @@ function snr_handle_reservation_submit()
 
     // 5. Prueba temporal: mostrar los datos recibidos
     //wp_die('Datos correctos: ' . esc_html($name) . ', ' . esc_html($date) . ' a las ' . esc_html($time));
-       wp_die( 'Datos correctos: ' . esc_html( $time ) . ' → termina a las ' . esc_html( snr_calculate_end_time( $time ) ) );
+    //wp_die( 'Datos correctos: ' . esc_html( $time ) . ' → termina a las ' . esc_html( snr_calculate_end_time( $time ) ) );
+    $end_time = snr_calculate_end_time( $time );
+    $table    = snr_find_available_table( $date, $time, $end_time, $party_size );
+
+    // Muestra "Mesa asignada: (nombre)" si hay mesa, o "No hay mesas disponibles" si $table es null
+    if ($table) {
+        wp_die('Mesa asignada: ' . esc_html($table->name));
+    } else {
+        wp_die('No hay mesas disponibles');
+    }
 }
 
 add_action('admin_post_snr_submit_reservation', 'snr_handle_reservation_submit');
