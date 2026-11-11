@@ -14,11 +14,12 @@
 .snr-form {
     max-width: 640px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1.25rem;
     background-color: #fff;
     border: 1px solid var(--snr-border);
     border-radius: 12px;
     color: var(--snr-text);
+    font-size: 1rem;
 }
 
 .snr-form * {
@@ -27,11 +28,11 @@
 
 .snr-form__title {
     margin: 0 0 0.25rem;
-    font-size: 1.5rem;
+    font-size: 1.35rem;
 }
 
 .snr-form__intro {
-    margin: 0 0 1.5rem;
+    margin: 0 0 1.25rem;
     color: var(--snr-muted);
 }
 
@@ -55,7 +56,7 @@
 
 /* 4. Campos */
 .snr-field {
-    margin: 0 0 1rem;
+    margin: 0 0 0.75rem;
 }
 
 .snr-field label {
@@ -68,7 +69,7 @@
 .snr-field input,
 .snr-field textarea {
     width: 100%;
-    padding: 0.65rem 0.75rem;
+    padding: 0.5rem 0.75rem;
     border: 1px solid var(--snr-border);
     border-radius: var(--snr-radius);
     background-color: #fff;
@@ -86,6 +87,175 @@
 /* 5. Dos columnas que se adaptan solas */
 .snr-form__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 0 1rem;
+}
+
+/* 6. Grupo de horas */
+.snr-times {
+    margin: 0 0 1rem;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+
+.snr-times__legend {
+    margin-bottom: 0.35rem;
+    padding: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.snr-times__group {
+    margin-bottom: 0.75rem;
+}
+
+.snr-times__service {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.75rem;
+    color: var(--snr-muted);
+}
+
+.snr-times__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* 7. Cada hora: el radio se oculta y el texto se convierte en píldora */
+.snr-chip {
+    position: relative;
+}
+
+.snr-chip input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.snr-chip span {
+    display: inline-block;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid var(--snr-border);
+    border-radius: 999px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.snr-chip span:hover {
+    border-color: var(--snr-accent);
+}
+
+.snr-chip input:checked + span {
+    background-color: var(--snr-accent);
+    border-color: var(--snr-accent);
+    color: #fff;
+}
+
+.snr-chip input:focus-visible + span {
+    outline: 2px solid var(--snr-accent);
+    outline-offset: 2px;
+}
+
+/* 8. Botón principal */
+.snr-button {
+    width: 100%;
+    padding: 0.85rem 1.5rem;
+    border: 0;
+    border-radius: var(--snr-radius);
+    background-color: var(--snr-accent);
+    color: #fff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.2s;
+}
+
+.snr-button:hover {
+    filter: brightness(0.9);
+}
+
+.snr-button:focus-visible {
+    outline: 2px solid var(--snr-accent);
+    outline-offset: 3px;
+}
+
+/* 9. Mensajes de error */
+.snr-message {
+    max-width: 640px;
+    margin: 0 auto 1rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid;
+    border-radius: var(--snr-radius);
+}
+
+.snr-message--error {
+    background-color: #fdecec;
+    border-color: #f3c1c1;
+    color: #8a1f1f;
+}
+
+/* 10. Confirmación */
+.snr-confirmation {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 1.25rem;
+    background-color: #fff;
+    border: 1px solid var(--snr-border);
+    border-radius: 12px;
+    color: var(--snr-text);
+    text-align: center;
+}
+
+.snr-confirmation h2 {
+    margin-top: 0;
+    color: #2f6b3a;
+}
+
+.snr-confirmation h2::before {
+    content: "✓";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    background-color: #e8f3ea;
+    font-size: 1.5rem;
+}
+
+.snr-confirmation a {
+    color: var(--snr-accent);
+    font-weight: 600;
+}
+
+/* 11. Pantallas medianas y grandes */
+@media (min-width: 600px) {
+    .snr-form,
+    .snr-confirmation {
+        padding: 2rem;
+    }
+}
+
+@media (min-width: 900px) {
+    .snr-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 2.5rem;
+        max-width: 960px;
+    }
+
+    .snr-form__title,
+    .snr-form__intro,
+    .snr-button {
+        grid-column: 1 / -1;
+    }
+
+    .snr-message {
+        max-width: 960px;
+    }
 }

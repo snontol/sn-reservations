@@ -102,7 +102,7 @@ function snr_render_reservation_form()
             </div>
 
             <p class="snr-field"> <label for="snr_notes">Notas adicionales</label>
-                <textarea id="snr_notes" name="notes" rows="4" placeholder="Alergias, celebraciones..."></textarea>
+                <textarea id="snr_notes" name="notes" rows="3" placeholder="Alergias, celebraciones..."></textarea>
             </p>
 
         </fieldset>
