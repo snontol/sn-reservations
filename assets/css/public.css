@@ -1,4 +1,91 @@
-.snr-form {
-    border: 3px solid red;
+/* 1. Variables del diseño */
+.snr-form,
+.snr-confirmation,
+.snr-message {
+    --snr-accent: #8a3b1f;
+    --snr-accent-soft: #fbf1ec;
+    --snr-border: #e4ddd6;
+    --snr-text: #2b2420;
+    --snr-muted: #7a6e66;
+    --snr-radius: 8px;
 }
 
+/* 2. La tarjeta */
+.snr-form {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: #fff;
+    border: 1px solid var(--snr-border);
+    border-radius: 12px;
+    color: var(--snr-text);
+}
+
+.snr-form * {
+    box-sizing: border-box;
+}
+
+.snr-form__title {
+    margin: 0 0 0.25rem;
+    font-size: 1.5rem;
+}
+
+.snr-form__intro {
+    margin: 0 0 1.5rem;
+    color: var(--snr-muted);
+}
+
+/* 3. Secciones: quitar el recuadro por defecto del fieldset */
+.snr-form__section {
+    margin: 0 0 1.5rem;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+
+.snr-form__legend {
+    margin-bottom: 0.75rem;
+    padding: 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--snr-accent);
+}
+
+/* 4. Campos */
+.snr-field {
+    margin: 0 0 1rem;
+}
+
+.snr-field label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.snr-field input,
+.snr-field textarea {
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--snr-border);
+    border-radius: var(--snr-radius);
+    background-color: #fff;
+    font: inherit;
+    color: inherit;
+}
+
+.snr-field input:focus,
+.snr-field textarea:focus {
+    outline: none;
+    border-color: var(--snr-accent);
+    box-shadow: 0 0 0 3px var(--snr-accent-soft);
+}
+
+/* 5. Dos columnas que se adaptan solas */
+.snr-form__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0 1rem;
+}
