@@ -88,6 +88,23 @@ function snr_render_reservation_form()
 
 add_shortcode('sn_reservation_form', 'snr_render_reservation_form');
 
+function snr_enqueue_public_assets() {
+    global $post;
+
+    if ( ! is_singular() || ! $post || ! has_shortcode( $post->post_content, 'sn_reservation_form' ) ) {
+        return;
+    }
+
+    wp_enqueue_style(
+        'snr-public',
+        SNR_PLUGIN_URL . 'assets/css/public.css',
+        array(),
+        SNR_VERSION
+    );
+}
+
+add_action( 'wp_enqueue_scripts', 'snr_enqueue_public_assets' );
+
 function snr_handle_reservation_submit()
 {
     // 1. Nonce

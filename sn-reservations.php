@@ -14,6 +14,8 @@
 defined('ABSPATH') || exit;
 
 define( 'SNR_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'SNR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'SNR_VERSION', '0.1.0' );
 
 require_once SNR_PLUGIN_DIR . 'includes/activation.php';
 require_once SNR_PLUGIN_DIR . 'includes/admin-menu.php';
