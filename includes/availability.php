@@ -2,6 +2,13 @@
 
 defined( 'ABSPATH' ) || exit;
 
+function snr_get_time_slots() {
+    return array(
+        'lunch'  => array( '13:00', '13:30', '14:00', '14:30' ),
+        'dinner' => array( '20:30', '21:00', '21:30', '22:00' ),
+    );
+}
+
 function snr_get_service( $time ) {
     list( $hours, $minutes ) = explode( ':', $time );
     $minutes_total = (int) $hours * 60 + (int) $minutes;

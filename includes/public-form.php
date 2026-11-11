@@ -88,10 +88,11 @@ function snr_render_reservation_form()
 
 add_shortcode('sn_reservation_form', 'snr_render_reservation_form');
 
-function snr_enqueue_public_assets() {
+function snr_enqueue_public_assets()
+{
     global $post;
 
-    if ( ! is_singular() || ! $post || ! has_shortcode( $post->post_content, 'sn_reservation_form' ) ) {
+    if (!is_singular() || !$post || !has_shortcode($post->post_content, 'sn_reservation_form')) {
         return;
     }
 
@@ -103,7 +104,7 @@ function snr_enqueue_public_assets() {
     );
 }
 
-add_action( 'wp_enqueue_scripts', 'snr_enqueue_public_assets' );
+add_action('wp_enqueue_scripts', 'snr_enqueue_public_assets');
 
 function snr_handle_reservation_submit()
 {
@@ -121,7 +122,8 @@ function snr_handle_reservation_submit()
     $notes = sanitize_textarea_field(wp_unslash($_POST['notes'] ?? ''));
 
     // 3. Datos de referencia para validar
-    $allowed_times = array('13:00', '13:30', '14:00', '14:30', '20:30', '21:00', '21:30', '22:00');
+    $slots = snr_get_time_slots();
+    $allowed_times = array_merge($slots['lunch'], $slots['dinner']);
     $today = current_time('Y-m-d');
 
     // 4. Validar 
