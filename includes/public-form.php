@@ -7,6 +7,12 @@ function snr_render_reservation_form()
     ob_start();
     $status = sanitize_key($_GET['snr_status'] ?? '');
 
+    $slots = snr_get_time_slots();
+    $service_labels = array(
+        'lunch' => 'Comida',
+        'dinner' => 'Cena',
+    );
+
     if ('success' === $status) {
         ?>
         <div class="snr-confirmation" role="status">
@@ -37,50 +43,71 @@ function snr_render_reservation_form()
         <input type="hidden" name="action" value="snr_submit_reservation">
         <?php wp_nonce_field('snr_submit_reservation'); ?>
 
-        <p>
-            <label for="snr_customer_name">Nombre</label>
-            <input type="text" id="snr_customer_name" name="customer_name" maxlength="100" required>
-        </p>
-        <p> <label for="snr_customer_phone">Teléfono</label>
-            <input type="tel" id="snr_customer_phone" name="customer_phone" maxlength="30" required>
-        </p>
-        <p>
-            <label for="snr_customer_email">Email</label>
-            <input type="email" id="snr_customer_email" name="customer_email" maxlength="100" required>
-        </p>
-        <p> <label for="snr_party_size">Número de personas</label>
-            <input type="number" id="snr_party_size" name="party_size" min="1" max="6" required>
-        </p>
-        <p> <label for="snr_high_chairs">Número de tronas</label>
-            <input type="number" id="snr_high_chairs" name="high_chairs" value="0" min="0" max="5">
-        </p>
-        <p> <label for="snr_reservation_date">Fecha de la reserva</label>
-            <input type="date" id="snr_reservation_date" name="reservation_date" required>
-        </p>
-        <p> <label for="snr_start_time">Hora de inicio</label>
+        <h2 class="snr-form__title">Reserva tu mesa</h2>
+        <p class="snr-form__intro">Te confirmamos al instante por email.</p>
 
-            <select id="snr_start_time" name="start_time" required>
-                <option value="">Elige una hora</option>
-                <optgroup label="Comida">
-                    <option value="13:00">13:00</option>
-                    <option value="13:30">13:30</option>
-                    <option value="14:00">14:00</option>
-                    <option value="14:30">14:30</option>
-                </optgroup>
-                <optgroup label="Cena">
-                    <option value="20:30">20:30</option>
-                    <option value="21:00">21:00</option>
-                    <option value="21:30">21:30</option>
-                    <option value="22:00">22:00</option>
-                </optgroup>
-            </select>
-        </p>
+        <fieldset class="snr-form__section">
+            <legend class="snr-form__legend">Tu reserva</legend>
 
-        <p> <label for="snr_notes">Notas adicionales</label>
-            <textarea id="snr_notes" name="notes" rows="4" placeholder="Alergias, celebraciones..."></textarea>
-        </p>
+            <div class="snr-form__grid">
+                <p class="snr-field">
+                    <label for="snr_reservation_date">Fecha</label>
+                    <input type="date" id="snr_reservation_date" name="reservation_date"
+                        min="<?php echo esc_attr(current_time('Y-m-d')); ?>" required>
+                </p>
+                <p class="snr-field">
+                    <label for="snr_party_size">Personas</label>
+                    <input type="number" id="snr_party_size" name="party_size" min="1" max="6" required>
+                </p>
+                <p class="snr-field">
+                    <label for="snr_high_chairs">Tronas</label>
+                    <input type="number" id="snr_high_chairs" name="high_chairs" value="0" min="0" max="5">
+                </p>
+            </div>
 
-        <p><button type="submit">Reservar</button></p>
+            <fieldset class="snr-times">
+                <legend class="snr-times__legend">Hora</legend>
+
+                <?php foreach ($slots as $service => $times): ?>
+                    <div class="snr-times__group">
+                        <span class="snr-times__service"><?php echo esc_html($service_labels[$service]); ?></span>
+                        <div class="snr-times__options">
+                            <?php foreach ($times as $slot): ?>
+                                <label class="snr-chip">
+                                    <input type="radio" name="start_time" value="<?php echo esc_attr($slot); ?>" required>
+                                    <span><?php echo esc_html($slot); ?></span>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </fieldset>
+        </fieldset>
+
+        <fieldset class="snr-form__section">
+            <legend class="snr-form__legend">Tus datos</legend>
+
+            <p class="snr-field">
+                <label for="snr_customer_name">Nombre</label>
+                <input type="text" id="snr_customer_name" name="customer_name" maxlength="100" required>
+            </p>
+            <div class="snr-form__grid">
+                <p class="snr-field"> <label for="snr_customer_phone">Teléfono</label>
+                    <input type="tel" id="snr_customer_phone" name="customer_phone" maxlength="30" required>
+                </p>
+                <p class="snr-field">
+                    <label for="snr_customer_email">Email</label>
+                    <input type="email" id="snr_customer_email" name="customer_email" maxlength="100" required>
+                </p>
+            </div>
+
+            <p class="snr-field"> <label for="snr_notes">Notas adicionales</label>
+                <textarea id="snr_notes" name="notes" rows="4" placeholder="Alergias, celebraciones..."></textarea>
+            </p>
+
+        </fieldset>
+
+        <button type="submit" class="snr-button">Reservar mesa</button>
     </form>
     <?php
     return ob_get_clean();
