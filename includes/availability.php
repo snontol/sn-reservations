@@ -48,3 +48,20 @@ function snr_find_available_table( $date, $start_time, $end_time, $party_size ) 
     return $wpdb->get_row( $wpdb->prepare( $sql, $party_size, $date, $end_time, $start_time ) );
 }
 
+function snr_is_blocked( $date, $time ) {
+    global $wpdb;
+    $blocks_table = $wpdb->prefix . 'snr_blocks';
+    $service      = snr_get_service( $time );
+
+    $count = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT COUNT(*) FROM $blocks_table
+             WHERE block_date = %s
+               AND ( service = 'all' OR service = %s )",
+            $date,
+            $service
+        )
+    );
+
+    return $count > 0;
+}

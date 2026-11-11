@@ -27,6 +27,12 @@ function snr_render_reservation_form()
         <p class="snr-message snr-message--error">Ha habido un problema al guardar tu reserva. Inténtalo de nuevo o llámanos.
         </p>
     <?php endif; ?>
+    <?php if ('closed' === $status): ?>
+        <p class="snr-message snr-message--error">Lo sentimos, el restaurante está cerrado en esa fecha u horario. Por favor,
+            elige otro día.
+        </p>
+    <?php endif; ?>
+
     <form class="snr-form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
         <input type="hidden" name="action" value="snr_submit_reservation">
         <?php wp_nonce_field('snr_submit_reservation'); ?>
@@ -115,12 +121,16 @@ function snr_handle_reservation_submit()
         wp_die('Datos no válidos');
     }
 
+    $redirect = wp_get_referer() ? wp_get_referer() : home_url('/');
+
+    // Restaurante cerrado en ese día o turno
+    if (snr_is_blocked($date, $time)) {
+        wp_safe_redirect(add_query_arg('snr_status', 'closed', $redirect));
+        exit;
+    }
 
     $end_time = snr_calculate_end_time($time);
     $table = snr_find_available_table($date, $time, $end_time, $party_size);
-
-    // 6. Página a la que volver: la del formulario
-    $redirect = wp_get_referer() ? wp_get_referer() : home_url('/');
 
     // 7. Sin mesa libre: volver con aviso
     if (!$table) {
