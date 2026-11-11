@@ -31,6 +31,7 @@ function snr_render_blocks_page()
                         <th>Fecha</th>
                         <th>Turno</th>
                         <th>Motivo</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -40,6 +41,15 @@ function snr_render_blocks_page()
                             </td>
                             <td><?php echo esc_html($service_labels[$block->service] ?? $block->service); ?></td>
                             <td><?php echo esc_html($block->reason); ?></td>
+                            <td>
+                                <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                                    <input type="hidden" name="action" value="snr_delete_block">
+                                    <input type="hidden" name="block_id" value="<?php echo esc_attr($block->id); ?>">
+                                    <?php wp_nonce_field('snr_delete_block'); ?>
+                                    <button type="submit" class="button"
+                                        onclick="return confirm('¿Eliminar este bloqueo? Se volverán a aceptar reservas ese día.');">Eliminar</button>
+                                </form>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -118,5 +128,36 @@ function snr_handle_add_block()
     exit;
 }
 
-// 7. Conectar con el hook: add_action( 'admin_post_snr_add_block', ... );
+function snr_handle_delete_block()
+{
+    // 1. Permisos: solo administradores
+    if (!current_user_can('manage_options')) {
+        wp_die('No tienes permisos para hacer esto.');
+    }
+
+    // 2. Nonce: 'snr_delete_block'
+    check_admin_referer('snr_delete_block');
+
+    // 3. Recoger el id: $block_id con absint( $_POST['block_id'] ?? 0 )
+    $block_id = absint($_POST['block_id'] ?? 0);
+
+    // 4. Validar: si $block_id < 1 → wp_die
+
+    if ($block_id < 1) {
+        wp_die('Datos no válidos');
+    }
+    // 5. Borrar con $wpdb->delete 
+    global $wpdb;
+    $wpdb->delete(
+        $wpdb->prefix . 'snr_blocks',  // tabla
+        array('id' => $block_id),    // qué fila (el WHERE)
+        array('%d')                  // formato del WHERE
+    );
+
+    // 6. Volver a la página de bloqueos
+    wp_safe_redirect(admin_url('admin.php?page=snr-blocks'));
+    exit;
+}
+
 add_action('admin_post_snr_add_block', 'snr_handle_add_block');
+add_action('admin_post_snr_delete_block', 'snr_handle_delete_block');
