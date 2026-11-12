@@ -16,6 +16,7 @@ async function loadDashboard(date) {
         const data = await response.json();
         renderKpis(data.summary);
         renderServices( data.services );
+        renderArrivals( data.upcoming );
     } catch (error) {
         console.error('No se pudo cargar el panel:', error);
     }
@@ -48,6 +49,65 @@ function renderServices( services ) {
     } );
 }
 
+function renderArrivals( upcoming ) {
+    const list = document.querySelector( '#snr-arrivals' );
+    list.replaceChildren();
+
+    // Sin reservas: un mensaje en lugar de la lista
+    if ( upcoming.length === 0 ) {
+        const empty = document.createElement( 'li' );
+        empty.className   = 'snr-arrivals__empty';
+        empty.textContent = 'No hay reservas para este día.';
+        list.append( empty );
+        return;
+    }
+
+    upcoming.forEach( ( arrival ) => {
+        const item = document.createElement( 'li' );
+
+        // 1. La hora
+        const time = document.createElement( 'span' );
+        time.className   = 'snr-arrivals__time';
+        time.textContent = arrival.time;
+        item.append( time );
+
+    // 2. El cliente
+        const guest = document.createElement( 'span' );
+        guest.className = 'snr-arrivals__guest';
+
+        const name = document.createElement( 'strong' );
+        name.textContent = arrival.name;
+
+        const personText = arrival.party_size === 1 ? 'persona' : 'personas';
+
+        // Construimos el texto con los datos de la reserva
+        let details = ` · ${ arrival.party_size } ${ personText } · ${ arrival.table }`;
+        
+        // Si hay tronas (high_chairs > 0), las añadimos al texto
+        if ( arrival.high_chairs > 0 ) {
+            details += ` · ${ arrival.high_chairs } trona${ arrival.high_chairs > 1 ? 's' : '' }`;
+        }
+
+        guest.append( name, details );
+        item.append( guest );
+
+        // 3. Las notas, solo si las hay 
+
+        if ( arrival.notes ) {
+            const notes = document.createElement( 'span' );
+            notes.className = 'snr-arrivals__notes';
+            notes.textContent = arrival.notes;
+            item.append ( notes );
+        }
+
+        list.append( item );
+    } );
+}
+
 dateInput.value = snrDashboard.today;
 loadDashboard(snrDashboard.today);
+
+dateInput.addEventListener( 'change', () => {
+    loadDashboard( dateInput.value );
+} );
 

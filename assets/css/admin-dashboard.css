@@ -92,6 +92,15 @@
     background-color: var(--snr-muted);
 }
 
+.snr-service.is-blocked .snr-bar {
+    background-color: #ececec;
+}
+
+.snr-service.is-blocked .snr-service__count {
+    color: #8a1f1f;
+    font-weight: 600;
+}
+
 .snr-service {
     margin-bottom: 1.25rem;
 }

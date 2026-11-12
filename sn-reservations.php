@@ -3,7 +3,7 @@
 /**
  * Plugin Name: SN Reservations
  * Description: Sistema de reservas para restaurantes con asignación automática de mesas, confirmación por email y panel de gestión.
- * Version: 1.0.1
+ * Version: 1.1.0
  * Author: Samuel Nontol
  * Author URI: https://snontol.github.io/nontol.dev/
  * Text Domain: sn-reservations
