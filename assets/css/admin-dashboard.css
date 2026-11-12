@@ -1,0 +1,73 @@
+/* 1. Variables */
+.snr-dashboard {
+    --snr-accent: #8a3b1f;
+    --snr-accent-soft: #fbf1ec;
+    --snr-border: #e4ddd6;
+    --snr-text: #2b2420;
+    --snr-muted: #7a6e66;
+    --snr-surface: #fff;
+    --snr-radius: 12px;
+    max-width: 1100px;
+}
+
+/* 2. Cabecera: título a la izquierda, fecha a la derecha */
+.snr-dash__header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* 3. Las cuatro métricas: cuadrícula adaptable */
+.snr-dash__kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* 4. Las dos tarjetas grandes: más ancha la de llegadas */
+.snr-dash__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 960px) {
+    .snr-dash__grid {
+        grid-template-columns: 1fr 1.5fr;
+    }
+}
+
+.snr-kpi,
+.snr-card {
+    background: var(--snr-surface);
+    border: 1px solid var(--snr-border);
+    border-radius: var(--snr-radius);
+    padding: 1.25rem;
+}
+
+.snr-kpi {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.snr-kpi__label {
+    font-size: 0.8125rem;
+    color: var(--snr-muted);
+}
+
+.snr-kpi__value {
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.1;
+    color: var(--snr-text);
+}
+
+.snr-card__title {
+    margin: 0 0 1rem;
+    font-size: 1rem;
+}
