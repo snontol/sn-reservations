@@ -2,7 +2,8 @@
 
 defined('ABSPATH') || exit;
 
-function snr_render_dashboard_page() {
+function snr_render_dashboard_page()
+{
     ?>
     <div class="wrap snr-dashboard">
 
@@ -72,8 +73,9 @@ function snr_render_dashboard_page() {
     <?php
 }
 
-function snr_enqueue_dashboard_assets( $hook_suffix ) {
-    if ( ! str_ends_with( $hook_suffix, 'snr-dashboard' ) ) {
+function snr_enqueue_dashboard_assets($hook_suffix)
+{
+    if (!str_ends_with($hook_suffix, 'snr-dashboard')) {
         return;
     }
 
@@ -85,5 +87,5 @@ function snr_enqueue_dashboard_assets( $hook_suffix ) {
     );
 }
 
-add_action( 'admin_enqueue_scripts', 'snr_enqueue_dashboard_assets' );
+add_action('admin_enqueue_scripts', 'snr_enqueue_dashboard_assets');
 

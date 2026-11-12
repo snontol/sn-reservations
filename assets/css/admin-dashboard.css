@@ -71,3 +71,81 @@
     margin: 0 0 1rem;
     font-size: 1rem;
 }
+
+/* 5. Barras de ocupación */
+.snr-bar {
+    height: 0.625rem;
+    background-color: var(--snr-accent-soft);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.snr-bar__fill {
+    width: 0;
+    height: 100%;
+    background-color: var(--snr-accent);
+    border-radius: inherit;
+    transition: width 0.4s ease;
+}
+
+.snr-service.is-blocked .snr-bar__fill {
+    background-color: var(--snr-muted);
+}
+
+.snr-service {
+    margin-bottom: 1.25rem;
+}
+
+.snr-service__header{
+   display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.snr-service__name{
+    font-weight: 600;
+}
+
+.snr-service__count{
+    color: var(--snr-muted);
+}
+
+/* 6. Lista de llegadas */
+.snr-arrivals li {
+    display: grid;
+    grid-template-columns: 3.5rem 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--snr-border);
+}
+
+.snr-arrivals {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.snr-arrivals li:last-child{
+    border-bottom: 0;
+}
+
+.snr-arrivals__time{
+    font-weight: 600;
+    color: var(--snr-accent);
+}
+
+.snr-arrivals__notes{
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background-color: #fdf3e1;
+    color: #7a4e00;
+}
+
+.snr-arrivals .snr-arrivals__empty {
+    display: block;
+    color: var(--snr-muted);
+}
