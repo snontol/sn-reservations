@@ -85,6 +85,24 @@ function snr_enqueue_dashboard_assets($hook_suffix)
         array(),
         SNR_VERSION
     );
+
+        wp_enqueue_script(
+        'snr-admin-dashboard',
+        SNR_PLUGIN_URL . 'assets/js/admin-dashboard.js',
+        array(),
+        SNR_VERSION,
+        true
+    );
+
+    wp_localize_script(
+        'snr-admin-dashboard',
+        'snrDashboard',
+        array(
+            'restUrl' => rest_url( 'snr/v1/dashboard' ),
+            'nonce'   => wp_create_nonce( 'wp_rest' ),
+            'today'   => current_time( 'Y-m-d' ),
+        )
+    );
 }
 
 add_action('admin_enqueue_scripts', 'snr_enqueue_dashboard_assets');
