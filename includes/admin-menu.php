@@ -30,6 +30,15 @@ function snr_register_admin_menu()
         'snr-blocks',
         'snr_render_blocks_page'
     );
+
+    add_submenu_page(
+        'sn-reservations',
+        'Panel',
+        'Panel',
+        'manage_options',
+        'snr-dashboard',
+        'snr_render_dashboard_page'
+        );
 }
 
 add_action('admin_menu', 'snr_register_admin_menu');
