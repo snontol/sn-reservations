@@ -25,5 +25,6 @@ require_once SNR_PLUGIN_DIR . 'includes/emails.php';
 require_once SNR_PLUGIN_DIR . 'includes/public-form.php';
 require_once SNR_PLUGIN_DIR . 'includes/admin-reservations.php';
 require_once SNR_PLUGIN_DIR . 'includes/admin-blocks.php';
+require_once SNR_PLUGIN_DIR . 'includes/rest-api.php';
 
 register_activation_hook(__FILE__, 'snr_activate');

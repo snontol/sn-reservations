@@ -28,6 +28,8 @@ function snr_render_admin_page()
     );
 
     echo '<div class="wrap"><h1>Reservas</h1>';
+    $test_url = add_query_arg('_wpnonce', wp_create_nonce('wp_rest'), rest_url('snr/v1/dashboard'));
+    echo '<p><a href="' . esc_url($test_url) . '" target="_blank">Probar API</a></p>';
 
     // 3. Filtro de fecha
     ?>
@@ -125,7 +127,7 @@ function snr_handle_cancel_reservation()
     }
 
     // 5. Actualizar con $wpdb->update (recuerda global $wpdb):
- 
+
     global $wpdb;
     $wpdb->update(
         $wpdb->prefix . 'snr_reservations', // tabla
